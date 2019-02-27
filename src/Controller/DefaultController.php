@@ -2,18 +2,30 @@
 
 namespace App\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class DefaultController extends Controller
+class DefaultController extends AbstractController
 {
     /**
      * @Route("/", name="homepage")
      */
-    public function indexAction()
+    public function index()
     {
         $template = 'default/index.html.twig';
         $args = [];
+
+        return $this->render($template, $args);
+    }
+
+    /**
+     * @Route("/about", name="about")
+     */
+    public function about()
+    {
+        $template = 'default/about.html.twig';
+        $args = [];
+
         return $this->render($template, $args);
     }
 }

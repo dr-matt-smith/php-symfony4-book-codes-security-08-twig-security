@@ -6,143 +6,99 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * @ORM\Table(name="app_users")
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
-class User implements UserInterface, \Serializable
+class User implements UserInterface
 {
     /**
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=25, unique=true)
+     * @ORM\Column(type="string", length=180, unique=true)
      */
     private $username;
 
     /**
-     * @ORM\Column(type="string", length=64)
-     */
-    private $password;
-
-
-
-    /**
-     * @ORM\Column(type="json_array")
+     * @ORM\Column(type="json")
      */
     private $roles = [];
 
-    public function getRoles()
-    {
-        return $this->roles;
-
-    }
-
     /**
-     * Set roles
-     *
-     * @param array $roles *
-     * @return User
+     * @var string The hashed password
+     * @ORM\Column(type="string")
      */
-    public function setRoles($roles)
-    {
-        $this->roles = $roles;
-        return $this;
-    }
+    private $password;
 
-
-
-    public function __construct()
-    {
-        $this->isActive = true;
-        // may not be needed, see section on salt below
-        // $this->salt = md5(uniqid('', true));
-    }
-
-    public function getUsername()
-    {
-        return $this->username;
-    }
-
-    public function getSalt()
-    {
-        // you *may* need a real salt depending on your encoder
-        // see section on salt below
-        return null;
-    }
-
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-
-    public function eraseCredentials()
-    {
-    }
-
-    /** @see \Serializable::serialize() */
-    public function serialize()
-    {
-        return serialize(array(
-            $this->id,
-            $this->username,
-            $this->password,
-            // see section on salt below
-            // $this->salt,
-        ));
-    }
-
-    /** @see \Serializable::unserialize() */
-    public function unserialize($serialized)
-    {
-        list (
-            $this->id,
-            $this->username,
-            $this->password,
-            // see section on salt below
-            // $this->salt
-            ) = unserialize($serialized);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
     /**
-     * @param mixed $id
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
      */
-    public function setId($id): void
+    public function getUsername(): string
     {
-        $this->id = $id;
+        return (string) $this->username;
     }
 
-
-
-    /**
-     * @param mixed $username
-     */
-    public function setUsername($username): void
+    public function setUsername(string $username): self
     {
         $this->username = $username;
+
+        return $this;
     }
 
     /**
-     * @param mixed $password
+     * @see UserInterface
      */
-    public function setPassword($password): void
+    public function getRoles(): array
     {
-        $this->password = $password;
+        return $this->roles;
     }
 
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
 
+        return $this;
+    }
 
+    /**
+     * @see UserInterface
+     */
+    public function getPassword(): string
+    {
+        return (string) $this->password;
+    }
 
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getSalt()
+    {
+        // not needed when using the "bcrypt" algorithm in security.yaml
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
 }

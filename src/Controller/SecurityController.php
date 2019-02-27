@@ -2,64 +2,33 @@
 
 namespace App\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Component\HttpFoundation\Request;
 
-use App\Entity\User;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-
-
-class SecurityController extends Controller
+class SecurityController extends AbstractController
 {
-
-
     /**
-     * @var UserPasswordEncoderInterface
+     * @Route("/login", name="app_login")
      */
-    private $encoder;
-
-    public function __construct(UserPasswordEncoderInterface $encoder)
+    public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        $this->encoder = $encoder;
+        // get the login error if there is one
+        $error = $authenticationUtils->getLastAuthenticationError();
+        // last username entered by the user
+        $lastUsername = $authenticationUtils->getLastUsername();
+
+        return $this->render('security/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
     }
 
     /**
-     * @Route("/login", name="login")
+     * @Route("/loginSuccess", name="login_success")
      */
-    public function login(Request $request, AuthenticationUtils $authUtils)
+    public function loginSuccess()
     {
-        // get the login error if there is one
-        $error = $authUtils->getLastAuthenticationError();
-
-        // last username entered by the user
-        $lastUsername = $authUtils->getLastUsername();
-
-        $template = 'security/login.html.twig';
-        $args = [
-            'last_username' => $lastUsername,
-            'error'         => $error,
-        ];
-
-        /*
-        if(null != $lastUsername){
-            $user = $this->getDoctrine()
-                ->getRepository(User::class)
-                ->findOneBy([
-                        'username' => $lastUsername,
-                    ]
-                );
-
-            $plainPassword = 'smith';
-            print $this->encoder->encodePassword($user, $plainPassword);
-
-            var_dump($user);
-            die();
-        }
-        */
-
-
+        $template = 'security/success.html.twig';
+        $args = [];
         return $this->render($template, $args);
     }
 }
